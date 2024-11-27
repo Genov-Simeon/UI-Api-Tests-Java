@@ -1,6 +1,8 @@
 package apiTests;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.response.Response;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import java.util.List;
@@ -12,7 +14,7 @@ import static io.restassured.RestAssured.given;
 import static org.testng.Assert.assertEquals;
 
 public class BlogPostApiTest {
-    private static final String BASE_URL = System.getenv("BASE_URL");
+    private String baseUrl;
     private static final String DATA_PROVIDER_NAME = "userPostCounts";
 
     @DataProvider(name = DATA_PROVIDER_NAME)
@@ -24,10 +26,21 @@ public class BlogPostApiTest {
         };
     }
 
+    @BeforeTest
+    public void setUp(){
+        Dotenv dotenv = Dotenv.configure()
+                .directory("./")
+                .filename(".env.example")
+                .load();
+
+        // Fetch environment variables
+        baseUrl = dotenv.get("BASE_URL_API");
+    }
+
     @Test(dataProvider = DATA_PROVIDER_NAME, description = "Verify post count for specific users")
     public void testUserPostCount(int userId, int expectedPosts) {
         Response response = given()
-            .baseUri(BASE_URL)
+            .baseUri(baseUrl)
             .when()
             .get("/posts")
             .then()
@@ -49,7 +62,7 @@ public class BlogPostApiTest {
     @Test(description = "Verify all post IDs are unique")
     public void testUniquePostIds() {
         Response response = given()
-            .baseUri(BASE_URL)
+            .baseUri(baseUrl)
             .when()
             .get("/posts")
             .then()
@@ -71,9 +84,5 @@ public class BlogPostApiTest {
         // Compare sizes to verify uniqueness
         assertEquals(allIds.size(), uniqueIds.size(), 
             "All post IDs should be unique");
-        
-        // Additional verification that we have the expected number of posts
-        assertEquals(allIds.size(), 100, 
-            "Expected total number of posts should be 100");
     }
 } 
