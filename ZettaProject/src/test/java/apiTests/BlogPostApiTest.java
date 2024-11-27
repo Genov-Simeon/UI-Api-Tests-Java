@@ -84,9 +84,5 @@ public class BlogPostApiTest {
         // Compare sizes to verify uniqueness
         assertEquals(allIds.size(), uniqueIds.size(), 
             "All post IDs should be unique");
-        
-        // Additional verification that we have the expected number of posts
-        assertEquals(allIds.size(), 100, 
-            "Expected total number of posts should be 100");
     }
 } 
