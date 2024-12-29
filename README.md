@@ -1,3 +1,5 @@
+# Zetta
+
 ## Environment Configuration
 
 This project uses environment variables for configuration. To set it up:
